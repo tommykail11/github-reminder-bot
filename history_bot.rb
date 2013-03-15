@@ -1,4 +1,4 @@
-require "socket"
+require "socket" 
 
 class History_Bot
 	def initialize
@@ -12,10 +12,10 @@ class History_Bot
 		@irc_server.puts "NICK #{nick}"
 		@irc_server.puts "JOIN #{@channel}"
 		@irc_server.puts "PRIVMSG #{@channel} :This is the HistoryBot. The command is !get_me_up_to_speed(num), where num gets the last num lines"
+		@records = File.open("records.md", "a+")
 	end
 
 	def librarian
-		@records = File.new("records.md", "a+")
 		until @irc_server.eof? do
 			@input = @irc_server.gets
 			
@@ -23,13 +23,13 @@ class History_Bot
 				usr = @input[/:[a-zA-Z_\-@]*!/]
 				msg = @input.sub(/.*?(?=PRIVMSG #{@channel})PRIVMSG #{@channel} :/, '')
 				@records.syswrite(usr[1...-1] + ': ' + msg + "\n")
-			#else
-				#@records.syswrite("Input is not coming from IRC")
 			end
 		end
 	end
 
 	def get_me_up_to_speed(num)
+		@records.rewind
+		@records.read
 
 	end
 end
